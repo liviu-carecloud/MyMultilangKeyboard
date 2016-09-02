@@ -19,10 +19,10 @@ public class KeyboardBinderHelper {
     private List<EditTextWrapper> mWrappers;
     private MyKeyboard            mKeyboard;
 
-    public KeyboardBinderHelper(Activity activity, int langId, List<EditText> edits) {
+    public KeyboardBinderHelper(Activity activity, MyKeyboard keyboard, List<EditText> edits) {
         mActivity = activity;
-        KeyboardView kv = ((KeyboardHolder)activity).getKeyboardView();
-        mKeyboard = new MyKeyboard(mActivity, kv, langId);
+        mKeyboard = keyboard;
+        mKeyboard.setEdits(edits);
         mEdits = edits;
         mWrappers = new ArrayList<>();
     }
@@ -30,7 +30,7 @@ public class KeyboardBinderHelper {
     public void bindEditsToKeyboard() {
         for (int i = 0; i < mEdits.size(); i++) {
             EditText ed = mEdits.get(i);
-            mWrappers.add(new EditTextWrapper(mActivity, ed, mKeyboard, ed.getText().toString()));
+            mWrappers.add(new EditTextWrapper(mActivity, ed, i, mKeyboard, ed.getText().toString()));
         }
     }
 }

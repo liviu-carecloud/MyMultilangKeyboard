@@ -9,10 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import test.app.mymultilangkeyboard.R;
+import test.app.mymultilangkeyboard.keyboard.interfaces.KeyboardHolder;
+import test.app.mymultilangkeyboard.test.Main2Activity;
 
 /**
  * Supporting fragment for MyKeyboard
- * todo: finish it
  */
 public class MyKeyboardFragment extends Fragment {
 
@@ -31,7 +32,8 @@ public class MyKeyboardFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         KeyboardView view = (KeyboardView) inflater.inflate(R.layout.keyboard, container, false);
-        mKeyboard = new MyKeyboard(getActivity(), view, mLangId);
+        mLangId = ((KeyboardHolder)getActivity()).getLangId();
+        mKeyboard = new MyKeyboard(getActivity(), view, mLangId, null);
         return view;
     }
 

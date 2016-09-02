@@ -1,13 +1,14 @@
 package test.app.mymultilangkeyboard.keyboard;
 
 import android.app.Activity;
-import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import test.app.mymultilangkeyboard.keyboard.interfaces.KeyboardHolder;
+
+import static android.view.MotionEvent.*;
 
 /**
  * Wrapper for an EditText that is used with MyKeyboard
@@ -15,27 +16,32 @@ import test.app.mymultilangkeyboard.keyboard.interfaces.KeyboardHolder;
 public class EditTextWrapper {
 
     private static final String LOG_TAG = EditTextWrapper.class.getSimpleName();
-    private boolean alreadyClick;
+    private boolean    alreadyClick;
     private Activity   mActivity;
-    private EditText   mEditText;
+    private EditText   mTargetEditText;
     private MyKeyboard myKeyboard;
+    private int        mEditIndex;
 
-    public EditTextWrapper(Activity activity, EditText editText, MyKeyboard keyboard, String text) {
+    public EditTextWrapper(Activity activity, EditText editText, int editIndex, MyKeyboard keyboard, String text) {
         mActivity = activity;
-        mEditText = editText;
+        mTargetEditText = editText;
         myKeyboard = keyboard;
         alreadyClick = false;
+        mEditIndex = editIndex;
 
-        setText(text);
+//        setText(text);
 
-        mEditText.setOnTouchListener(new View.OnTouchListener() {
+        mTargetEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if(!alreadyClick) { // to avoid requesting the focus multiple times
+                if(motionEvent.getAction() == ACTION_DOWN) {
+//                if(!alreadyClick) { // to avoid requesting the focus multiple times
+                    myKeyboard.setTargetEditIndex(mEditIndex);
                     view.requestFocus();
                     ((KeyboardHolder) mActivity).toggleKeyboardVisible(true); // todo test if activity is KeyboardHolder
-                    alreadyClick = true;
-                } else { //
+//                    alreadyClick = true;
+                }
+                else { // already clicked
                     KeyboardHolder kh = ((KeyboardHolder)mActivity);
                     if(!kh.isKeyboardVisible()) {
                         kh.toggleKeyboardVisible(true);
@@ -45,40 +51,25 @@ public class EditTextWrapper {
             }
         });
 
-        mEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mTargetEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if(hasFocus) {
-                    myKeyboard.setTargetEdit(mEditText);
+                    Log.v(LOG_TAG, "hasFocus()");
+                    mTargetEditText.setSelection(0, mTargetEditText.getText().length());
                 } else {
-                    myKeyboard.setTargetEdit(null);
                     // reset alreadyClicked
                     alreadyClick = false;
+                    mTargetEditText.setSelection(0);
                 }
             }
         });
     }
 
     public void setText(String text) {
-        if(mEditText != null) {
-            mEditText.setText(text);
-            mEditText.setSelection(text.length());
+        if(mTargetEditText != null) {
+            mTargetEditText.setText(text);
+            mTargetEditText.setSelection(0);
         }
     }
-
-    public String getText() {
-        if(mEditText != null) {
-            return mEditText.getText().toString();
-        }
-        return null;
-    }
-
-    private void hideSystemKeyboard() {
-        View view = mActivity.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
 }

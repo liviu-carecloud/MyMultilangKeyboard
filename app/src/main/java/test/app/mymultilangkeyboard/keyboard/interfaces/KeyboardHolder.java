@@ -1,6 +1,5 @@
 package test.app.mymultilangkeyboard.keyboard.interfaces;
 
-import android.inputmethodservice.KeyboardView;
 import android.widget.EditText;
 
 import java.util.List;
@@ -10,7 +9,8 @@ import java.util.List;
  */
 public interface KeyboardHolder {
     void toggleKeyboardVisible(boolean visible);
-    KeyboardView getKeyboardView();
     void bindKeyboardToEdits(List<EditText> edits, int langId);
     boolean isKeyboardVisible();
+    int getLangId();
+    void setLangId(int id);
 }

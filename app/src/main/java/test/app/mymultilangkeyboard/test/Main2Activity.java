@@ -72,7 +72,9 @@ public class Main2Activity extends AppCompatActivity implements KeyboardHolder {
     @Override
     public void bindKeyboardToEdits(List<EditText> edits, int langId) {
         // bind the keyboard to the mEdits
-        (new KeyboardBinderHelper(this, langId, edits)).bindEditsToKeyboard();
+        (new KeyboardBinderHelper(this,
+                                  ((MyKeyboardFragment) fm.findFragmentByTag("keyboard")).getKeyboard(),
+                                  edits)).bindEditsToKeyboard();
     }
 
     @Override
@@ -91,19 +93,20 @@ public class Main2Activity extends AppCompatActivity implements KeyboardHolder {
         }
     }
 
-    @Override
-    public KeyboardView getKeyboardView() {
-        MyKeyboardFragment keyboardFragment = (MyKeyboardFragment) fm.findFragmentByTag("keyboard");
-        if (keyboardFragment != null) {
-            return keyboardFragment.getKeyboard().getKeyboardView();
-        }
-        return null;
-    }
+//    @Override
+//    public KeyboardView getKeyboardView() {
+//        MyKeyboardFragment keyboardFragment = (MyKeyboardFragment) fm.findFragmentByTag("keyboard");
+//        if (keyboardFragment != null) {
+//            return keyboardFragment.getKeyboard().getKeyboardView();
+//        }
+//        return null;
+//    }
 
     /**
      *
      * @return
      */
+    @Override
     public int getLangId() {
         return langId;
     }
@@ -112,6 +115,7 @@ public class Main2Activity extends AppCompatActivity implements KeyboardHolder {
      *
      * @param langId
      */
+    @Override
     public void setLangId(int langId) {
         this.langId = langId;
     }

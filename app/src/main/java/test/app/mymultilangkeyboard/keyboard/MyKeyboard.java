@@ -7,8 +7,11 @@ import android.media.AudioManager;
 import android.util.Log;
 import android.widget.EditText;
 
+import java.util.List;
+
 import test.app.mymultilangkeyboard.keyboard.interfaces.KeyboardHolder;
 import test.app.mymultilangkeyboard.R;
+import test.app.mymultilangkeyboard.test.Main2Activity;
 
 /**
  * Custom keyboard
@@ -34,30 +37,18 @@ public class MyKeyboard implements KeyboardView.OnKeyboardActionListener {
     private EditText     mTargetEdit;
     private Context      mContext;
     private boolean mCaps = false;
-    private TargetEditor mTargetEditor;
+    private TargetEditor   mTargetEditor;
+    private List<EditText> mEdits;
+    private int mTargetEditIndex;
 
-    public MyKeyboard(Context context, KeyboardView keyView, int langId) {
+    public MyKeyboard(Context context, KeyboardView keyView, int langId, List<EditText> editTexts) {
         mContext = context;
         mKv = keyView;
         mKeyboard = new Keyboard(context, getKeyResource(langId));
         mKv.setKeyboard(mKeyboard);
         mKv.setOnKeyboardActionListener(this);
         mTargetEditor = new TargetEditor();
-    }
-
-    /**
-     * Set the edit target
-     * @param targetEdit The edit that will use this keyboard
-     */
-    public void setTargetEdit(EditText targetEdit) {
-        mTargetEdit = targetEdit;
-        if (mTargetEdit != null) {
-            mTargetEditor.initTargetEditBuffer();
-        }
-    }
-
-    public EditText getTargetEdit() {
-        return mTargetEdit;
+        mEdits = editTexts;
     }
 
     /**
@@ -99,7 +90,10 @@ public class MyKeyboard implements KeyboardView.OnKeyboardActionListener {
             mKeyboard.setShifted(mCaps);
             mKv.invalidateAllKeys();
         } else if(primaryCode == Keyboard.KEYCODE_DONE) {
-            ((KeyboardHolder)mContext).toggleKeyboardVisible(false);
+            moveTargetToNextEdit();
+            if(mTargetEdit == null) {
+                ((KeyboardHolder) mContext).toggleKeyboardVisible(false);
+            }
         } else if (primaryCode == U_ACUTE_CODE) {
             if (mCaps) {
                 mTargetEditor.addChar(U_ACUTE_CHAR_CAP);
@@ -179,6 +173,31 @@ public class MyKeyboard implements KeyboardView.OnKeyboardActionListener {
 
     public KeyboardView getKeyboardView() {
         return mKv;
+    }
+
+    public void setTargetEditIndex(int index) {
+        if(index != -1) {
+            mTargetEditIndex = index;
+            mTargetEdit = mEdits.get(mTargetEditIndex);
+        } else {
+            mTargetEdit = null;
+        }
+    }
+
+    public void setEdits(List<EditText> edits) {
+        this.mEdits = edits;
+    }
+
+    private void moveTargetToNextEdit() {
+        mTargetEdit.clearFocus();
+        ++mTargetEditIndex;
+        if(mTargetEditIndex == mEdits.size()) {
+            mTargetEditIndex = -1;
+            mTargetEdit = null;
+        } else {
+            mTargetEdit = mEdits.get(mTargetEditIndex);
+            mTargetEdit.requestFocus();
+        }
     }
 
     /**
