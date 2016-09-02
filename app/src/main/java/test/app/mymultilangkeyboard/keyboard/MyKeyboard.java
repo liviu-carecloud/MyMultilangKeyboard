@@ -4,6 +4,7 @@ import android.content.Context;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.media.AudioManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.EditText;
 
@@ -18,19 +19,6 @@ import test.app.mymultilangkeyboard.test.Main2Activity;
  */
 public class MyKeyboard implements KeyboardView.OnKeyboardActionListener {
 
-    private static final int  U_ACUTE_CODE      = 250;
-    private static final char U_ACUTE_CHAR_CAP  = 'Ú';
-    private static final char U_ACUTE_CHAR      = 'ú';
-    private static final int  I_ACUTE_CODE      = 237;
-    private static final char I_ACUTE_CHAR_CAP  = 'Í';
-    private static final char I_ACUTE_CHAR      = 'í';
-    private static final int  O_ACUTE_CODE      = 243;
-    private static final char O_ACUTE_CHAR_CAP  = 'Ó';
-    private static final char O_ACUTE_CHAR      = 'ó';
-    private static final int  U_UMLAUT_CODE     = 252;
-    private static final char U_UMLAUT_CHAR_CAP = 'Ü';
-    private static final char U_UMLAUT_CHAR     = 'ü';
-
     private static final String LOG_TAG = "MyKeyboard";
     private Keyboard     mKeyboard;
     private KeyboardView mKv;
@@ -39,7 +27,7 @@ public class MyKeyboard implements KeyboardView.OnKeyboardActionListener {
     private boolean mCaps = false;
     private TargetEditor   mTargetEditor;
     private List<EditText> mEdits;
-    private int mTargetEditIndex;
+    private int            mTargetEditIndex;
 
     public MyKeyboard(Context context, KeyboardView keyView, int langId, List<EditText> editTexts) {
         mContext = context;
@@ -89,34 +77,11 @@ public class MyKeyboard implements KeyboardView.OnKeyboardActionListener {
             mCaps = !mCaps;
             mKeyboard.setShifted(mCaps);
             mKv.invalidateAllKeys();
-        } else if(primaryCode == Keyboard.KEYCODE_DONE) {
+        } else if (primaryCode == Keyboard.KEYCODE_DONE) {
             moveTargetToNextEdit();
-            if(mTargetEdit == null) {
+            if (mTargetEdit == null) {
                 ((KeyboardHolder) mContext).toggleKeyboardVisible(false);
-            }
-        } else if (primaryCode == U_ACUTE_CODE) {
-            if (mCaps) {
-                mTargetEditor.addChar(U_ACUTE_CHAR_CAP);
-            } else {
-                mTargetEditor.addChar(U_ACUTE_CHAR);
-            }
-        } else if (primaryCode == I_ACUTE_CODE) {
-            if (mCaps) {
-                mTargetEditor.addChar(I_ACUTE_CHAR_CAP);
-            } else {
-                mTargetEditor.addChar(I_ACUTE_CHAR);
-            }
-        } else if (primaryCode == O_ACUTE_CODE) {
-            if (mCaps) {
-                mTargetEditor.addChar(O_ACUTE_CHAR_CAP);
-            } else {
-                mTargetEditor.addChar(O_ACUTE_CHAR);
-            }
-        } else if (primaryCode == U_UMLAUT_CODE) {
-            if (mCaps) {
-                mTargetEditor.addChar(U_UMLAUT_CHAR_CAP);
-            } else {
-                mTargetEditor.addChar(U_UMLAUT_CHAR);
+                ((AppCompatActivity)mContext).getWindow().getDecorView().getRootView().requestFocus();
             }
         } else { // all captured characters
             char code = (char) primaryCode;
@@ -171,14 +136,11 @@ public class MyKeyboard implements KeyboardView.OnKeyboardActionListener {
     public void swipeUp() {
     }
 
-    public KeyboardView getKeyboardView() {
-        return mKv;
-    }
-
     public void setTargetEditIndex(int index) {
-        if(index != -1) {
+        if (index != -1) {
             mTargetEditIndex = index;
             mTargetEdit = mEdits.get(mTargetEditIndex);
+            mTargetEditor.initTargetEditBuffer();
         } else {
             mTargetEdit = null;
         }
@@ -191,12 +153,13 @@ public class MyKeyboard implements KeyboardView.OnKeyboardActionListener {
     private void moveTargetToNextEdit() {
         mTargetEdit.clearFocus();
         ++mTargetEditIndex;
-        if(mTargetEditIndex == mEdits.size()) {
+        if (mTargetEditIndex == mEdits.size()) {
             mTargetEditIndex = -1;
             mTargetEdit = null;
         } else {
             mTargetEdit = mEdits.get(mTargetEditIndex);
             mTargetEdit.requestFocus();
+            mTargetEditor.initTargetEditBuffer();
         }
     }
 

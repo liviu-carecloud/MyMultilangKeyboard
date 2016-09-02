@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import test.app.mymultilangkeyboard.R;
+import test.app.mymultilangkeyboard.keyboard.KeyboardHolderActivity;
 import test.app.mymultilangkeyboard.keyboard.interfaces.KeyboardClient;
 import test.app.mymultilangkeyboard.keyboard.interfaces.KeyboardHolder;
 
@@ -62,6 +63,6 @@ public class EditsFragment extends Fragment implements KeyboardClient {
 
     @Override
     public void attachKeyboardToEdits(List<EditText> editTexts) {
-        ((KeyboardHolder)getActivity()).bindKeyboardToEdits(editTexts, ((Main2Activity)getActivity()).getLangId());
+        ((KeyboardHolder)getActivity()).bindKeyboardToEdits(editTexts, ((KeyboardHolderActivity)getActivity()).getLangId());
     }
 }

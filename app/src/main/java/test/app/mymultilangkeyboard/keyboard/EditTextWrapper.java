@@ -16,7 +16,6 @@ import static android.view.MotionEvent.*;
 public class EditTextWrapper {
 
     private static final String LOG_TAG = EditTextWrapper.class.getSimpleName();
-    private boolean    alreadyClick;
     private Activity   mActivity;
     private EditText   mTargetEditText;
     private MyKeyboard myKeyboard;
@@ -26,26 +25,16 @@ public class EditTextWrapper {
         mActivity = activity;
         mTargetEditText = editText;
         myKeyboard = keyboard;
-        alreadyClick = false;
         mEditIndex = editIndex;
-
-//        setText(text);
 
         mTargetEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if(motionEvent.getAction() == ACTION_DOWN) {
-//                if(!alreadyClick) { // to avoid requesting the focus multiple times
+                    Log.v(LOG_TAG, "onTouch()");
                     myKeyboard.setTargetEditIndex(mEditIndex);
                     view.requestFocus();
                     ((KeyboardHolder) mActivity).toggleKeyboardVisible(true); // todo test if activity is KeyboardHolder
-//                    alreadyClick = true;
-                }
-                else { // already clicked
-                    KeyboardHolder kh = ((KeyboardHolder)mActivity);
-                    if(!kh.isKeyboardVisible()) {
-                        kh.toggleKeyboardVisible(true);
-                    }
                 }
                 return true;
             }
@@ -58,18 +47,9 @@ public class EditTextWrapper {
                     Log.v(LOG_TAG, "hasFocus()");
                     mTargetEditText.setSelection(0, mTargetEditText.getText().length());
                 } else {
-                    // reset alreadyClicked
-                    alreadyClick = false;
                     mTargetEditText.setSelection(0);
                 }
             }
         });
-    }
-
-    public void setText(String text) {
-        if(mTargetEditText != null) {
-            mTargetEditText.setText(text);
-            mTargetEditText.setSelection(0);
-        }
     }
 }
