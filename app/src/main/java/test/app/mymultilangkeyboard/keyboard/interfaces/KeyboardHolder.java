@@ -1,0 +1,16 @@
+package test.app.mymultilangkeyboard.keyboard.interfaces;
+
+import android.inputmethodservice.KeyboardView;
+import android.widget.EditText;
+
+import java.util.List;
+
+/**
+ * Created by lsoco_user on 8/31/2016.
+ */
+public interface KeyboardHolder {
+    void toggleKeyboardVisible(boolean visible);
+    KeyboardView getKeyboardView();
+    void bindKeyboardToEdits(List<EditText> edits, int langId);
+    boolean isKeyboardVisible();
+}
